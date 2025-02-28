@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Registration - Healthy You Hospital</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/registration.css">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <script>
+        function navigateTo(page) {
+            // Show loading animation
+            $(".loading-overlay").fadeIn();
+            setTimeout(() => {
+                window.location.href = page;
+            }, 1000);
+        }
+
+        function submitForm(opVisit) {
+            $(".loading-overlay").fadeIn();
+            setTimeout(() => {
+                if (opVisit) {
+                    alert('Patient registered and proceeding to OP visit.');
+                    window.location.href = 'op_visit.html';
+                } else {
+                    alert('Patient registered successfully.');
+                    window.location.href = 'dashboard.html';
+                }
+            }, 1500);
+        }
+
+        $(document).ready(function() {
+            setTimeout(() => $(".loading-overlay").fadeOut(), 1000);
+        });
+    </script>
+</head>
+<body>
+
+    <!-- Loading Animation -->
+    <div class="loading-overlay">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <div class="dashboard-container container-fluid">
+        <aside class="sidebar bg-dark text-white p-3">
+            <h2 class="text-center"><i class="fas fa-hospital"></i> Healthy You</h2>
+            <ul class="nav flex-column">
+                <li class="nav-item" onclick="navigateTo('dashboard.html')">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </li>
+                <li class="nav-item active" onclick="navigateTo('registration.html')">
+                    <i class="fas fa-user-plus"></i> Registration
+                </li>
+                <li class="nav-item" onclick="navigateTo('op_visit.html')">
+                    <i class="fas fa-notes-medical"></i> OP Visit
+                </li>
+                <li class="nav-item" onclick="navigateTo('triage.html')">
+                    <i class="fas fa-stethoscope"></i> Triage
+                </li>
+                <li class="nav-item" onclick="navigateTo('consultation.html')">
+                    <i class="fas fa-user-md"></i> Consultation
+                </li>
+                <li class="nav-item" onclick="navigateTo('radiology.html')">
+                    <i class="fas fa-x-ray"></i> Radiology
+                </li>
+                <li class="nav-item" onclick="navigateTo('cashier.html')">
+                    <i class="fas fa-money-bill"></i> Cashier
+                </li>
+            </ul>
+            <button class="btn btn-danger mt-3 w-100" onclick="navigateTo('index.html')">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </aside>
+
+        <main class="content p-4">
+            <h1 class="text-center mb-4">Patient Registration</h1>
+            <p class="text-danger text-start fw-bold"><i class="fas fa-info-circle"></i> Registration Bill: KSH 100</p>
+            
+            <form id="registrationForm" class="row g-3 shadow-lg p-4 bg-white rounded">
+                <div class="col-md-4">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="firstName" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="secondName" class="form-label">Second Name</label>
+                    <input type="text" class="form-control" id="secondName">
+                </div>
+                <div class="col-md-4">
+                    <label for="thirdName" class="form-label">Third Name</label>
+                    <input type="text" class="form-control" id="thirdName">
+                </div>
+                <div class="col-md-3">
+                    <label for="age" class="form-label">Age</label>
+                    <input type="number" class="form-control" id="age" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="gender" class="form-label">Gender</label>
+                    <select class="form-select" id="gender" required>
+                        <option selected disabled>Choose...</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="residency" class="form-label">Residency</label>
+                    <input type="text" class="form-control" id="residency" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <input type="text" class="form-control" id="phone" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="spouseName" class="form-label">Spouse Name</label>
+                    <input type="text" class="form-control" id="spouseName">
+                </div>
+                <div class="col-md-6">
+                    <label for="spousePhone" class="form-label">Spouse Phone</label>
+                    <input type="text" class="form-control" id="spousePhone">
+                </div>
+                <div class="col-md-6">
+                    <label for="nextOfKin" class="form-label">Next of Kin (Who to call in case of emergency)</label>
+                    <input type="text" class="form-control" id="nextOfKin" required>
+                </div>
+                <div class="col-12">
+                    <button type="button" class="btn btn-primary" onclick="submitForm(false)">
+                        <i class="fas fa-check-circle"></i> Submit
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="submitForm(true)">
+                        <i class="fas fa-arrow-right"></i> Proceed to OP Visit
+                    </button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

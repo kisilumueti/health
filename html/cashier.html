@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashier - Healthy You Hospital</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/cashier.css">
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    
+    <script>
+        function navigateTo(page) {
+            $(".loading-overlay").fadeIn();
+            setTimeout(() => {
+                window.location.href = page;
+            }, 1000);
+        }
+
+        function logout() {
+            alert('Logging out...');
+            window.location.href = 'index.html';
+        }
+
+        function showBillingOptions() {
+            $('#billingOptions').removeClass('d-none');
+        }
+
+        $(document).ready(function() {
+            // Dummy patient data
+            const patients = [
+                { name: 'John Doe', age: 35, gender: 'Male', residency: 'Nairobi', phone: '+254700000000' },
+                { name: 'Jane Smith', age: 28, gender: 'Female', residency: 'Mombasa', phone: '+254711111111' },
+                { name: 'Michael Johnson', age: 42, gender: 'Male', residency: 'Mombasa', phone: '+254721222333' }
+            ];
+
+            // Search patient functionality
+            $('#searchPatient').on('input', function() {
+                const query = $(this).val().toLowerCase();
+                const suggestions = patients.filter(patient => patient.name.toLowerCase().includes(query));
+                let suggestionsHtml = '';
+                suggestions.forEach(patient => {
+                    suggestionsHtml += `<li class="list-group-item" onclick="selectPatient('${patient.name}', ${patient.age}, '${patient.gender}', '${patient.residency}', '${patient.phone}')">${patient.name}</li>`;
+                });
+                $('#suggestions').html(suggestionsHtml);
+            });
+
+            setTimeout(() => $(".loading-overlay").fadeOut(), 1000);
+        });
+
+        function selectPatient(name, age, gender, residency, phone) {
+            $('#patientDetails').html(`
+                <tr>
+                    <td>${name}</td>
+                    <td>${age}</td>
+                    <td>${gender}</td>
+                    <td>${residency}</td>
+                    <td>${phone}</td>
+                </tr>
+            `);
+            $('#suggestions').html('');
+            showBillingOptions();
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Loading Animation -->
+    <div class="loading-overlay">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <aside class="sidebar bg-dark text-white p-3">
+            <h2 class="text-center"><i class="fas fa-hospital"></i> Healthy You</h2>
+            <ul class="nav flex-column">
+                <li class="nav-item" onclick="navigateTo('registration.html')">
+                    <i class="fas fa-user-plus"></i> Registration
+                </li>
+                <li class="nav-item" onclick="navigateTo('op_visit.html')">
+                    <i class="fas fa-notes-medical"></i> OP Visit
+                </li>
+                <li class="nav-item" onclick="navigateTo('triage.html')">
+                    <i class="fas fa-stethoscope"></i> Triage
+                </li>
+                <li class="nav-item" onclick="navigateTo('radiology.html')">
+                    <i class="fas fa-x-ray"></i> Radiology
+                </li>
+                <li class="nav-item" onclick="navigateTo('inpatient.html')">
+                    <i class="fas fa-bed"></i> Inpatient
+                </li>
+                <li class="nav-item" onclick="navigateTo('consultation.html')">
+                    <i class="fas fa-user-md"></i> Consultation
+                </li>
+                <li class="nav-item" onclick="navigateTo('ward.html')">
+                    <i class="fas fa-procedures"></i> Ward
+                </li>
+                <li class="nav-item active" onclick="navigateTo('cashier.html')">
+                    <i class="fas fa-money-bill"></i> Cashier
+                </li>
+            </ul>
+            <button class="btn btn-danger mt-3 w-100" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </aside>
+
+        <div class="content">
+            <h1>Cashier</h1>
+            <div class="mb-3">
+                <label for="searchPatient" class="form-label">Search Patient</label>
+                <input type="text" class="form-control" id="searchPatient" placeholder="Search by name...">
+                <ul id="suggestions" class="list-group mt-2"></ul>
+            </div>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Residency</th>
+                        <th>Phone</th>
+                    </tr>
+                </thead>
+                <tbody id="patientDetails"></tbody>
+            </table>
+
+            <div id="billingOptions" class="d-none">
+                <nav class="nav nav-pills flex-column flex-sm-row">
+                    <a class="flex-sm-fill text-sm-center nav-link" href="#" data-bs-toggle="modal" data-bs-target="#serviceBillingModal">Service Billing</a>
+                    <a class="flex-sm-fill text-sm-center nav-link" href="#" data-bs-toggle="modal" data-bs-target="#medPrescriptionModal">Med Prescription Billing</a>
+                    <a class="flex-sm-fill text-sm-center nav-link" href="#" data-bs-toggle="modal" data-bs-target="#radiologyBillingModal">Radiology Billing</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal templates for each section -->
+    <!-- Service Billing Modal -->
+    <div class="modal fade" id="serviceBillingModal" tabindex="-1" aria-labelledby="serviceBillingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="serviceBillingModalLabel">Service Billing</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Content for Service Billing goes here -->
+                    <form>
+                        <div class="mb-3">
+                            <label for="serviceBillingDetails" class="form-label">Billing Details</label>
+                            <textarea class="form-control" id="serviceBillingDetails" rows="5"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Billing</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Med Prescription Billing Modal -->
+    <div class="modal fade" id="medPrescriptionModal" tabindex="-1" aria-labelledby="medPrescriptionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="medPrescriptionModalLabel">Medical Prescription Billing</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Content for Medical Prescription Billing goes here -->
+                    <form>
+                        <div class="mb-3">
+                            <label for="medPrescriptionBillingDetails" class="form-label">Billing Details</label>
+                            <textarea class="form-control" id="medPrescriptionBillingDetails" rows="5"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Billing</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Radiology Billing Modal -->
+    <div class="modal fade" id="radiologyBillingModal" tabindex="-1" aria-labelledby="radiologyBillingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="radiologyBillingModalLabel">Radiology Billing</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Content for Radiology Billing goes here -->
+                    <form>
+                        <div class="mb-3">
+                            <label for="radi[_{{{CITATION{{{_1{](https://github.com/hello-jerryle/portfolio/tree/96e16ad47d3eddfd961092edb3dc14f1723d7694/BACKGROUND.md)[_{{{CITATION{{{_2{](https://github.com/JulioFonseca/Laravel_teste_pratico/tree/c680578d9ec74b74f3b72e10665ce9d66d1b5ca0/resources%2Fviews%2Flista.blade.php)
+                                                        <label for="radiologyBillingDetails" class="form-label">Billing Details</label>
+                            <textarea class="form-control" id="radiologyBillingDetails" rows="5"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Billing</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

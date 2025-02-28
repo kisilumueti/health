@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triage - Healthy You Hospital</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/triage.css">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <script>
+        // Dummy patient data
+        const patients = [
+            { id: 1, name: "John Doe", age: 30, gender: "Male", previousNotes: "No prior conditions." },
+            { id: 2, name: "Jane Smith", age: 25, gender: "Female", previousNotes: "Asthma." },
+            { id: 3, name: "Michael Johnson", age: 40, gender: "Male", previousNotes: "Hypertension." },
+            { id: 4, name: "Emily Davis", age: 35, gender: "Female", previousNotes: "No prior conditions." },
+            { id: 5, name: "Robert Brown", age: 60, gender: "Male", previousNotes: "Diabetes and high blood pressure." }
+        ];
+
+        let selectedPatient = null; // Store the selected patient
+        let patientNotes = ""; // Store patient's notes
+
+        // Function to search patients by name
+        function searchPatient() {
+            const searchQuery = document.getElementById('patientSearch').value.toLowerCase();
+            const filteredPatients = patients.filter(patient => patient.name.toLowerCase().includes(searchQuery));
+
+            if (filteredPatients.length === 1) {
+                // If only one patient matches, automatically select it
+                selectPatient(filteredPatients[0].id);
+            } else {
+                // Display all filtered patients in the table
+                displayPatients(filteredPatients);
+            }
+        }
+
+        // Function to display patients in the table
+        function displayPatients(patientsList) {
+            const patientTableBody = document.getElementById('patientTableBody');
+            patientTableBody.innerHTML = ""; // Clear previous results
+
+            if (patientsList.length === 0) {
+                patientTableBody.innerHTML = "<tr><td colspan='4'>No patients found.</td></tr>";
+            }
+
+            patientsList.forEach(patient => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${patient.name}</td>
+                    <td>${patient.age}</td>
+                    <td>${patient.gender}</td>
+                    <td><button class="btn btn-primary" onclick="selectPatient(${patient.id})">Select</button></td>
+                `;
+                patientTableBody.appendChild(row);
+            });
+        }
+
+        // Function to handle patient selection
+        function selectPatient(patientId) {
+            selectedPatient = patients.find(patient => patient.id === patientId);
+
+            // Fill in the form with the selected patient details
+            document.getElementById('patientName').value = selectedPatient.name;
+            document.getElementById('patientAge').value = selectedPatient.age;
+            document.getElementById('patientGender').value = selectedPatient.gender;
+
+            // Display patient's previous notes
+            patientNotes = selectedPatient.previousNotes;
+            document.getElementById('patientNotes').innerText = "Previous Notes: " + patientNotes;
+
+            // Display the action bar with department referral options
+            document.getElementById('actionBar').style.display = 'block';
+
+            // Reset the search and hide the search results
+            document.getElementById('patientSearch').value = selectedPatient.name;
+            document.getElementById('patientTableBody').innerHTML = "";
+        }
+
+        // Function to analyze patient's health data and provide feedback
+        function analyzeHealth() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value) / 100; // Convert cm to meters
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            const bloodPressure = document.getElementById('bloodPressure').value;
+            let message = "";
+
+            // BMI Calculation (Weight in kg / (Height in meters)^2)
+            const bmi = weight / (height * height);
+
+            // BMI Feedback
+            if (bmi < 18.5) {
+                message += "Underweight: Consider gaining weight for better health.\n";
+            } else if (bmi >= 18.5 && bmi <= 24.9) {
+                message += "Perfect Weight: Keep it up!\n";
+            } else if (bmi >= 25) {
+                message += "Overweight: Consider losing weight for better health.\n";
+            }
+
+            // Blood Pressure Feedback
+            const [systolic, diastolic] = bloodPressure.split('/').map(num => parseInt(num.trim()));
+
+            if (systolic > 140 || diastolic > 90) {
+                message += "High Blood Pressure: You might need medical intervention.\n";
+            } else if (systolic < 90 || diastolic < 60) {
+                message += "Low Blood Pressure: Stay hydrated and consult a doctor.\n";
+            } else {
+                message += "Normal Blood Pressure: Great!\n";
+            }
+
+            // Temperature Feedback
+            if (temperature > 37.5) {
+                message += "Fever Detected: Consider rest and consult a doctor.\n";
+            }
+
+            // Display the health feedback
+            document.getElementById('healthFeedback').innerText = message;
+        }
+
+        // Function to open the AI Diagnosis and Medication Suggestions pop-up
+        function openAiPopup() {
+            // Simulate an AI message for diagnosis suggestions based on the patient notes
+            const aiMessage = "AI suggests: Consider tests for Hypertension and Diabetes.";
+            document.getElementById('aiPopupContent').innerText = aiMessage;
+            document.getElementById('aiPopup').style.display = 'block';
+        }
+
+        // Function to close the AI popup
+        function closeAiPopup() {
+            document.getElementById('aiPopup').style.display = 'none';
+        }
+
+        // Function to handle triage form submission
+        function submitTriageForm() {
+            $(".loading-overlay").fadeIn();
+            setTimeout(() => {
+                alert("Patient triage completed successfully.");
+                window.location.href = 'consultation.html';
+            }, 1500);
+        }
+
+        // Function to send the patient to a different department with notes
+        function sendToDepartment(department) {
+            const notes = prompt("Please add any additional notes before sending to " + department);
+            if (notes) {
+                alert(`Patient sent to ${department} with additional notes: ${notes}`);
+                document.getElementById('actionBar').style.display = 'none'; // Hide the action bar
+            }
+        }
+
+        // Function to diagnose TB using AI (Dummy Prediction Logic)
+        function diagnoseTB() {
+            const symptoms = {
+                fever: parseFloat(document.getElementById('temperature').value) > 37.5,
+                weightLoss: parseFloat(document.getElementById('weight').value) < 50,  // Assumption: underweight may indicate TB
+                cough: confirm("Is the patient experiencing persistent cough?"), // Ask user for cough
+                nightSweats: confirm("Is the patient experiencing night sweats?") // Ask user for night sweats
+            };
+
+            // Simple prediction based on symptoms (This should be replaced with real AI logic)
+            if (symptoms.fever && symptoms.weightLoss && symptoms.cough && symptoms.nightSweats) {
+                alert("High likelihood of Tuberculosis. Immediate medical consultation required.");
+            } else {
+                alert("Low likelihood of Tuberculosis. Monitor symptoms and seek further evaluation if necessary.");
+            }
+        }
+
+        // Navigation functionality
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        $(document).ready(function() {
+            displayPatients(patients);
+            setTimeout(() => $(".loading-overlay").fadeOut(), 1000);
+        });
+    </script>
+</head>
+<body>
+
+    <!-- Loading Animation -->
+    <div class="loading-overlay">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <div class="dashboard-container container-fluid">
+        <aside class="sidebar bg-dark text-white p-3">
+            <h2 class="text-center"><i class="fas fa-hospital"></i> Healthy You</h2>
+            <ul class="nav flex-column">
+                <li class="nav-item" onclick="navigateTo('registration.html')">
+                    <i class="fas fa-user-plus"></i> Registration
+                </li>
+                <li class="nav-item" onclick="navigateTo('op_visit.html')">
+                    <i class="fas fa-notes-medical"></i> OP Visit
+                </li>
+                <li class="nav-item active" onclick="navigateTo('triage.html')">
+                    <i class="fas fa-stethoscope"></i> Triage
+                </li>
+                <li class="nav-item" onclick="navigateTo('consultation.html')">
+                    <i class="fas fa-user-md"></i> Consultation
+                </li>
+                <li class="nav-item" onclick="navigateTo('radiology.html')">
+                    <i class="fas fa-x-ray"></i> Radiology
+                </li>
+                <li class="nav-item" onclick="navigateTo('inpatient.html')">
+                    <i class="fas fa-bed"></i> Inpatient
+                </li>
+                <li class="nav-item" onclick="navigateTo('ward.html')">
+                    <i class="fas fa-procedures"></i> Ward
+                </li>
+                <li class="nav-item" onclick="navigateTo('cashier.html')">
+                    <i class="fas fa-money-bill"></i> Cashier
+                </li>
+            </ul>
+            <button class="btn btn-danger mt-3 w-100" onclick="navigateTo('index.html')">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </aside>
+
+        <main class="content p-4">
+            <h1 class="text-center mb-4">Patient Triage</h1>
+
+            <!-- Action Bar: Department Options -->
+            <div id="actionBar" class="mb-3" style="display:none;">
+                <button class="btn btn-primary" onclick="sendToDepartment('Ward')">Send to Ward</button>
+                <button class="btn btn-secondary" onclick="sendToDepartment('Radiology')">Send to Radiology</button>
+                <button class="btn btn-warning" onclick="sendToDepartment('Consultation')">Send to Consultation</button>
+            </div>
+
+            <!-- Search Patient -->
+            <div class="mb-3">
+                <label for="patientSearch" class="form-label">Search Patient by Name:</label>
+                <input type="text" class="form-control" id="patientSearch" oninput="searchPatient()" placeholder="Enter Patient's Name">
+            </div>
+
+            <!-- Patient Table -->
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Select</th>
+                    </tr>
+                </thead>
+                <tbody id="patientTableBody"></tbody>
+            </table>
+
+            <!-- Patient Details Form -->
+            <h3>Selected Patient Information</h3>
+            <form id="triageForm" class="mb-4" onsubmit="submitTriageForm()">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="patientName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="patientName" disabled>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="patientAge" class="form-label">Age</label>
+                        <input type="text" class="form-control" id="patientAge" disabled>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="patientGender" class="form-label">Gender</label>
+                        <input type="text" class="form-control" id="patientGender" disabled>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="patientNotes" class="form-label">Patient Notes</label>
+                    <textarea class="form-control" id="patientNotes" rows="3" readonly></textarea>
+                </div>
+                <!-- Medical Details -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="weight" class="form-label">Weight (kg)</label>
+                        <input type="number" class="form-control" id="weight" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="height" class="form-label">Height (cm)</label>
+                        <input type="number" class="form-control" id="height" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="temperature" class="form-label">Temperature (°C)</label>
+                        <input type="number" class="form-control" id="temperature" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="bloodPressure" class="form-label">Blood Pressure (mmHg)</label>
+                    <input type="text" class="form-control" id="bloodPressure" required>
+                </div>
+
+                <div class="mb-3">
+                    <button type="button" class="btn btn-info" onclick="analyzeHealth()">Analyze Health</button>
+                    <button type="button" class="btn btn-danger" onclick="diagnoseTB()">AI TB Diagnosis</button>
+                    <button type="submit" class="btn btn-success">Submit Triage</button>
+                </div>
+            </form>
+
+            <h4>Health Analysis</h4>
+            <p id="healthFeedback"></p>
+
+            <!-- AI Diagnosis and Medication Suggestions -->
+            <button class="btn btn-primary" onclick="openAiPopup()">AI Diagnosis Suggestions</button>
+
+            <!-- AI Popup -->
+            <div id="aiPopup" class="modal" tabindex="-1" style="display:none;">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">AI Diagnosis Suggestions</h5>
+                            <button type="button" class="btn-close" onclick="closeAiPopup()" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p id="aiPopupContent"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

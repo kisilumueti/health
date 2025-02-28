@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Healthy You Hospital</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- JS Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="../js/dashboard.js" defer></script>
+
+    <script>
+        function navigateTo(page) {
+            // Show loading animation
+            $(".loading-overlay").fadeIn();
+
+            setTimeout(() => {
+                window.location.href = page;
+            }, 1000);
+        }
+
+        function logout() {
+            alert('Logging out...');
+            window.location.href = 'index.html';
+        }
+
+        $(document).ready(function() {
+            setTimeout(() => $(".loading-overlay").fadeOut(), 1000);
+
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['8AM', '10AM', '12PM', '2PM', '4PM', '6PM'],
+                    datasets: [{
+                        label: 'Revenue (KSH)',
+                        data: [5000, 7000, 8000, 6000, 9000, 10000],
+                        borderColor: 'blue',
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+
+    <!-- Loading Animation -->
+    <div class="loading-overlay">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <div class="dashboard-container container-fluid">
+        <aside class="sidebar bg-dark text-white p-3">
+            <h2 class="text-center"><i class="fas fa-hospital"></i> Healthy You</h2>
+            <ul class="nav flex-column">
+                <li class="nav-item" onclick="navigateTo('registration.html')">
+                    <i class="fas fa-user-plus"></i> Registration
+                </li>
+                <li class="nav-item" onclick="navigateTo('op_visit.html')">
+                    <i class="fas fa-notes-medical"></i> OP Visit
+                </li>
+                <li class="nav-item" onclick="navigateTo('triage.html')">
+                    <i class="fas fa-stethoscope"></i> Triage
+                </li>
+                <li class="nav-item" onclick="navigateTo('consultation.html')">
+                    <i class="fas fa-user-md"></i> Consultation
+                </li>
+                <li class="nav-item" onclick="navigateTo('radiology.html')">
+                    <i class="fas fa-x-ray"></i> Radiology
+                </li>
+                <li class="nav-item" onclick="navigateTo('inpatient.html')">
+                    <i class="fas fa-bed"></i> Inpatient
+                </li>
+                <li class="nav-item" onclick="navigateTo('ward.html')">
+                    <i class="fas fa-procedures"></i> Ward
+                </li>
+                <li class="nav-item" onclick="navigateTo('cashier.html')">
+                    <i class="fas fa-money-bill"></i> Cashier
+                </li>
+            </ul>
+            <button class="btn btn-danger mt-3 w-100" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </aside>
+        
+        <main class="content p-4">
+            <h1 class="text-center mb-4">Hospital Dashboard</h1>
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <div class="card shadow p-3 mb-4 bg-white rounded">
+                        <h5 class="card-title">Total OP Patients</h5>
+                        <p class="card-text fs-3 fw-bold text-primary" id="totalOp">150</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card shadow p-3 mb-4 bg-white rounded">
+                        <h5 class="card-title">Total Inpatients</h5>
+                        <p class="card-text fs-3 fw-bold text-primary" id="totalInpatients">80</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card shadow p-3 mb-4 bg-white rounded">
+                        <h5 class="card-title">Total Doctors</h5>
+                        <p class="card-text fs-3 fw-bold text-primary" id="totalDoctors">20</p>
+                    </div>
+                </div>
+            </div>
+            <canvas id="revenueChart"></canvas>
+        </main>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthy You Hospital - Login</title>
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Healthy You Hospital</h2>
+        <div class="login-box">
+            <h3>Login</h3>
+            <input type="text" id="username" placeholder="Enter Username" required>
+            <input type="password" id="password" placeholder="Enter Password" required>
+            <button onclick="login()">Login</button>
+            <p id="error-message"></p>
+            <button class="forgot-password" onclick="forgotPassword()">Forgot Password?</button>
+            <div class="show-password">
+                <input type="checkbox" id="showPass" onclick="togglePassword()"> Show Password
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to handle login action
+        function login() {
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+            var errorMessage = document.getElementById('error-message');
+
+            if (username === "" || password === "") {
+                errorMessage.innerText = "Please fill in all fields.";
+                errorMessage.style.color = "red";
+                return;
+            }
+
+            if (username === "admin" && password === "admin123") {
+                alert("Login Successful! Redirecting...");
+                window.location.href = "dashboard.html";
+            } else {
+                errorMessage.innerText = "Invalid credentials. Try again!";
+                errorMessage.style.color = "red";
+            }
+        }
+
+        // Function to handle forgotten password action
+        function forgotPassword() {
+            alert("Redirecting to password reset page...");
+            window.location.href = "reset.html";
+        }
+
+        // Function to toggle password visibility
+        function togglePassword() {
+            var passwordField = document.getElementById('password');
+            passwordField.type = passwordField.type === "password" ? "text" : "password";
+        }
+
+        // Add Enter key event for login
+        document.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                login();
+            }
+        });
+    </script>
+</body>
+</html>

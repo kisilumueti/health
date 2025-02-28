@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OP Visit - Healthy You Hospital</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Custom OP Visit CSS -->
+    <link rel="stylesheet" href="../css/op_visit.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <!-- Custom JS -->
+    <script>
+        // Dummy patient data
+        const patients = [
+            { name: "John Doe", id: 1, age: 25, gender: "Male", residency: "Nairobi", phone: "0700123456" },
+            { name: "Jane Smith", id: 2, age: 30, gender: "Female", residency: "Mombasa", phone: "0723456789" },
+            { name: "Samuel Muthomi", id: 3, age: 40, gender: "Male", residency: "Kiambu", phone: "0734567890" },
+            { name: "Alice Wambui", id: 4, age: 22, gender: "Female", residency: "Nakuru", phone: "0745678901" },
+            { name: "Michael Otieno", id: 5, age: 35, gender: "Male", residency: "Kisumu", phone: "0798765432" },
+        ];
+
+        $(document).ready(function () {
+            // Hide loading animation when the page is loaded
+            $(".loading-overlay").fadeOut();
+
+            // Sidebar navigation - active class toggle
+            $(".nav-item").click(function () {
+                $(".nav-item").removeClass("active");
+                $(this).addClass("active");
+                const page = $(this).attr("data-page");
+                navigateTo(page);
+            });
+
+            // Search and autocomplete for patient names
+            $("#searchPatient").on("input", function () {
+                let query = $(this).val().toLowerCase();
+                let suggestions = patients.filter(patient => patient.name.toLowerCase().includes(query));
+                $("#suggestions").empty();
+                suggestions.forEach(patient => {
+                    $("#suggestions").append(`<li class="list-group-item" data-id="${patient.id}">${patient.name}</li>`);
+                });
+            });
+
+            // Populate selected patient data in a table
+            $(document).on("click", "#suggestions li", function () {
+                const patientId = $(this).data("id");
+                const patient = patients.find(p => p.id === patientId);
+                $("#searchPatient").val(patient.name);
+                $("#selectedPatient").val(patient.name);
+
+                // Fill the table with patient data
+                $("#patientTable").html(`
+                    <tr>
+                        <td>${patient.name}</td>
+                        <td>${patient.age}</td>
+                        <td>${patient.gender}</td>
+                        <td>${patient.residency}</td>
+                        <td>${patient.phone}</td>
+                    </tr>
+                `);
+
+                $("#suggestions").empty();  // Hide suggestions
+            });
+
+            // Submit form to the next page (triage.html)
+            $("#submitForm").click(function () {
+                const patientName = $("#selectedPatient").val();
+                const visitPurpose = $("#visitPurpose").val();
+                
+                if (patientName && visitPurpose) {
+                    // Show loading animation before redirect
+                    $(".loading-overlay").fadeIn();
+                    setTimeout(() => {
+                        // Pass data to triage.html (you can use localStorage or a form submission)
+                        localStorage.setItem("patientName", patientName);
+                        localStorage.setItem("visitPurpose", visitPurpose);
+                        window.location.href = "triage.html";
+                    }, 1000);
+                } else {
+                    alert("Please fill in all fields.");
+                }
+            });
+        });
+
+        function navigateTo(page) {
+            $(".loading-overlay").fadeIn();
+            setTimeout(() => {
+                window.location.href = page;
+            }, 1000);
+        }
+    </script>
+</head>
+<body>
+    <!-- Loading Animation -->
+    <div class="loading-overlay">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar p-3">
+        <h2><i class="fas fa-hospital"></i> Healthy You</h2>
+        <ul class="nav flex-column">
+            <li class="nav-item" data-page="dashboard.html">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </li>
+            <li class="nav-item" data-page="registration.html">
+                <i class="fas fa-user-plus"></i> Registration
+            </li>
+            <li class="nav-item active" data-page="op_visit.html">
+                <i class="fas fa-notes-medical"></i> OP Visit
+            </li>
+            <li class="nav-item" data-page="triage.html">
+                <i class="fas fa-stethoscope"></i> Triage
+            </li>
+            <li class="nav-item" data-page="consultation.html">
+                <i class="fas fa-user-md"></i> Consultation
+            </li>
+            <li class="nav-item" data-page="radiology.html">
+                <i class="fas fa-x-ray"></i> Radiology
+            </li>
+            <li class="nav-item" data-page="cashier.html">
+                <i class="fas fa-money-bill"></i> Cashier
+            </li>
+        </ul>
+        <button class="btn btn-danger mt-3 w-100" onclick="navigateTo('index.html')">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="content">
+        <h1>OP Visit</h1>
+        <p class="text-danger text-start fw-bold"><i class="fas fa-info-circle"></i> OP Visit Bill: KSH 50</p>
+
+        <!-- Patient Search Section -->
+        <form id="opVisitForm" class="shadow-lg p-4 bg-white rounded">
+            <div class="mb-3">
+                <label for="searchPatient" class="form-label">Search Patient</label>
+                <input type="text" class="form-control" id="searchPatient" placeholder="Search by name...">
+                <ul id="suggestions" class="list-group mt-2" style="max-height: 150px; overflow-y: auto;"></ul>
+                <input type="hidden" id="selectedPatient" name="selectedPatient" required>
+            </div>
+
+            <!-- Patient Information Table -->
+            <h3>Patient Details</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Residency</th>
+                        <th>Phone</th>
+                    </tr>
+                </thead>
+                <tbody id="patientTable">
+                    <!-- Patient details will appear here -->
+                </tbody>
+            </table>
+
+            <!-- Purpose of Visit Section -->
+            <div class="mb-3">
+                <label for="visitPurpose" class="form-label">Purpose of Visit</label>
+                <select class="form-select" id="visitPurpose" required>
+                    <option value="" selected disabled>Choose the purpose of visit...</option>
+                    <option value="Appointment">Appointment</option>
+                    <option value="Meds">Meds</option>
+                    <option value="Troubles Awoken">Troubles Awoken</option>
+                    <option value="Radiology">Radiology</option>
+                    <option value="Consultation">Consultation</option>
+                    <option value="Check-up">Check-up</option>
+                </select>
+            </div>
+
+            <!-- Submit Section -->
+            <div class="d-grid gap-2">
+                <button type="button" class="btn btn-primary" id="submitForm">Submit and Proceed to Triage</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+

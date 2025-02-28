@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password - Healthy You Hospital</title>
+    <link rel="stylesheet" href="../css/reset.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Reset Your Password</h2>
+        <div class="reset-box">
+            <h3>Enter your email</h3>
+            <input type="email" id="email" placeholder="Enter your email address" required>
+            <button onclick="sendResetLink()">Send Reset Link</button>
+            <p id="message"></p>
+            <button class="back-login" onclick="goToLogin()">Back to Login</button>
+        </div>
+    </div>
+
+    <script>
+        function sendResetLink() {
+            var email = document.getElementById('email').value;
+            var message = document.getElementById('message');
+
+            if (email === "") {
+                message.innerText = "Please enter your email address.";
+                message.style.color = "red";
+                return;
+            }
+
+            if (validateEmail(email)) {
+                message.innerText = "A reset link has been sent to your email.";
+                message.style.color = "green";
+            } else {
+                message.innerText = "Please enter a valid email address.";
+                message.style.color = "red";
+            }
+        }
+
+        function validateEmail(email) {
+            var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function goToLogin() {
+            window.location.href = "index.html";
+        }
+
+        // Add Enter key event for submitting email
+        document.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                sendResetLink();
+            }
+        });
+    </script>
+</body>
+</html>
